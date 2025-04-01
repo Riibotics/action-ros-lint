@@ -29,7 +29,7 @@ export async function run() {
 
 		// linterTool is the executable name to invoke
 		// linterToolDashes is the name with only dashes used for debian package name composition
-		const linterTool = core.getInput("linter").replace("-","_");
+		const linterTool = core.getInput("linter").replace("-", "_");
 		const linterToolDashes = linterTool.replace("_", "-")
 		const packageName = core.getInput("package-name", { required: true });
 		const packageNameList = packageName.split(RegExp("\\s"));
@@ -41,7 +41,19 @@ export async function run() {
 		await exec.exec("rosdep", ["update"]);
 
 		await exec.exec("sudo", ["apt-get", "update"]);
-		await runAptGetInstall([`ros-${rosDistribution}-ament-${linterToolDashes}`]);
+		await runAptGetInstall([`python3-ament-package`]);
+		// Install ament_lint_cmake from riibotics customized ament_lint packages
+		await exec.exec(
+			"bash",
+			[
+				"-c",
+				"cd /tmp && mkdir -p ament_lint_ws/src && cd ament_lint_ws/src && " +
+				"git clone https://github.com/Riibotics/ament_lint.git && " +
+				"cd .. && colcon build --merge-install --install-base /opt/ros/humble && " +
+				"rm -rf /tmp/ament_lint_ws"
+			],
+			{ cwd: rosWorkspaceDir }
+		);
 
 		const options = {
 			cwd: rosWorkspaceDir
@@ -55,9 +67,9 @@ export async function run() {
 			[
 				"-c",
 				`source /opt/ros/${rosDistribution}/setup.sh && ` +
-					`ament_${linterTool} $(colcon list --packages-select ${packageNameList.join(
-						" "
-					)} -p) ${additionalArguments}`
+				`ament_${linterTool} $(colcon list --packages-select ${packageNameList.join(
+					" "
+				)} -p) ${additionalArguments}`
 			],
 			options
 		);
