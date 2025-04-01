@@ -26262,7 +26262,7 @@ function run() {
                 "cd /tmp && mkdir -p ament_lint_ws/src && cd ament_lint_ws/src && " +
                     "git clone https://github.com/Riibotics/ament_lint.git && " +
                     "cd .. && colcon build --merge-install --install-base /opt/ros/humble && " +
-                    "rm -rf /tmp/ament_lint_ws"
+                    "cd /tmp && rm -rf ament_lint_ws"
             ], { cwd: rosWorkspaceDir });
             const options = {
                 cwd: rosWorkspaceDir
