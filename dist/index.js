@@ -26253,17 +26253,6 @@ function run() {
             const rosDistribution = core.getInput("distribution");
             const rosWorkspaceDir = core.getInput("workspace-directory") || process.env.GITHUB_WORKSPACE;
             const additionalArguments = core.getInput("arguments");
-            yield exec.exec("rosdep", ["update"]);
-            yield exec.exec("sudo", ["apt-get", "update"]);
-            yield runAptGetInstall([`python3-ament-package`]);
-            // Install ament_lint_cmake from riibotics customized ament_lint packages
-            yield exec.exec("bash", [
-                "-c",
-                "cd /tmp && mkdir -p ament_lint_ws/src && cd ament_lint_ws/src && " +
-                    "git clone https://github.com/Riibotics/ament_lint.git && " +
-                    "cd .. && colcon build --merge-install --install-base /opt/ros/${rosDistribution} && " +
-                    "cd /tmp && rm -rf ament_lint_ws"
-            ], { cwd: rosWorkspaceDir });
             const options = {
                 cwd: rosWorkspaceDir
             };
